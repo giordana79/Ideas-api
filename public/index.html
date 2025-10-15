@@ -2,27 +2,42 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
+    <!-- Codifica caratteri UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Adatta la pagina ai dispositivi mobili -->
     <link rel="icon" href="idea.png" />
+    <!-- Icona della pagina -->
     <title>Bacheca Idee</title>
+    <!-- Titolo della pagina -->
     <link rel="stylesheet" href="style.css" />
+    <!-- Collegamento al CSS esterno -->
   </head>
+
   <body>
+    <!-- ------------------- HEADER ------------------- -->
     <header>
       <h1>💡 Bacheca Idee</h1>
+      <!-- Titolo principale -->
       <button id="themeToggle">🌙</button>
+      <!-- Bottone per cambiare tema -->
     </header>
 
+    <!-- ------------------- MAIN ------------------- -->
     <main>
+      <!-- Form per inserire nuove idee -->
       <form id="ideaForm">
         <input type="text" id="author" placeholder="Autore" required />
+        <!-- Nome autore -->
         <input type="text" id="title" placeholder="Titolo dell’idea" required />
+        <!-- Titolo idea -->
         <textarea
           id="description"
           placeholder="Descrizione"
           required
         ></textarea>
+        <!-- Descrizione idea -->
         <select id="category" required>
+          <!-- Categoria dell’idea -->
           <option value="">Seleziona una categoria</option>
           <option value="tecnologia">Tecnologia</option>
           <option value="educazione">Educazione</option>
@@ -30,59 +45,68 @@
           <option value="altro">Altro</option>
         </select>
         <select id="status" required>
+          <!-- Stato iniziale dell’idea -->
           <option value="in corso">In corso</option>
           <option value="approvata">Approvata</option>
           <option value="scartata">Scartata</option>
         </select>
         <button type="submit">💾 Pubblica idea</button>
+        <!-- Pulsante invio -->
       </form>
 
+      <!-- Contenitore dove verranno inserite tutte le idee -->
       <div id="ideasList"></div>
     </main>
 
+    <!-- Contenitore toast per messaggi temporanei -->
     <div id="toast"></div>
 
     <script>
-      const API_URL = "http://localhost:3000/api/ideas";
+      const API_URL = "http://localhost:3000/api/ideas"; // URL API backend
 
       // ----------------- TEMA -----------------
-      const themeBtn = document.getElementById("themeToggle");
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "dark") document.body.classList.add("dark");
+      const themeBtn = document.getElementById("themeToggle"); // Bottone tema
+      const savedTheme = localStorage.getItem("theme"); // Recupera tema salvato
+      if (savedTheme === "dark") document.body.classList.add("dark"); // Applica tema dark se salvato
       themeBtn.textContent = document.body.classList.contains("dark")
         ? "☀️"
-        : "🌙";
+        : "🌙"; // Imposta icona
 
       themeBtn.addEventListener("click", () => {
+        // Cambio tema al click
         document.body.classList.toggle("dark");
         const isDark = document.body.classList.contains("dark");
         themeBtn.textContent = isDark ? "☀️" : "🌙";
-        localStorage.setItem("theme", isDark ? "dark" : "light");
+        localStorage.setItem("theme", isDark ? "dark" : "light"); // Salva scelta
       });
 
       // ----------------- TOAST -----------------
       function showToast(message, type = "success") {
         const toast = document.getElementById("toast");
         const config = {
+          // Colori e icone per tipo di messaggio
           success: { color: "#27ae60", icon: "✅" },
           error: { color: "#c0392b", icon: "❌" },
           warning: { color: "#f39c12", icon: "⚠️" },
           info: { color: "#3498db", icon: "💡" },
         };
         const { color, icon } = config[type] || config.info;
-        toast.textContent = `${icon} ${message}`;
+        toast.textContent = `${icon} ${message}`; // Testo toast
         toast.style.backgroundColor = color;
         toast.style.opacity = "1";
         toast.style.transform = "translateY(0)";
         toast.style.pointerEvents = "auto";
         setTimeout(() => {
+          // Nasconde dopo 2,5s
           toast.style.opacity = "0";
           toast.style.transform = "translateY(-20px)";
           toast.style.pointerEvents = "none";
         }, 2500);
       }
 
+      // ----------------- ESCAPE HTML -----------------
       function escapeHtml(s) {
+        // Previene XSS
         if (!s) return "";
         return s
           .replaceAll("&", "&amp;")
@@ -92,16 +116,18 @@
           .replaceAll("'", "&#39;");
       }
 
-      // ----------------- CRUD -----------------
+      // ----------------- FETCH IDEE -----------------
       async function fetchIdeas() {
+        // Recupera tutte le idee
         try {
           const res = await fetch(API_URL);
           const ideas = await res.json();
           const list = document.getElementById("ideasList");
-          list.innerHTML = "";
+          list.innerHTML = ""; // Pulisce contenitore
           ideas.forEach((idea) => {
+            // Cicla tutte le idee
             const div = document.createElement("div");
-            div.className = "idea";
+            div.className = "idea"; // Classe card
             div.innerHTML = `
               <h3>${escapeHtml(idea.title)}
                 <span class="status ${
@@ -120,25 +146,25 @@
                 <button onclick="deleteIdea('${idea._id}')">🗑️ Elimina</button>
               </div>
             `;
-            list.appendChild(div);
+            list.appendChild(div); // Aggiunge card al DOM
           });
         } catch (err) {
-          showToast("❌ Errore nel caricare le idee", "error");
+          showToast("❌ Errore nel caricare le idee", "error"); // Messaggio errore
         }
       }
 
-      // Creazione nuova idea
+      // ----------------- CREAZIONE NUOVA IDEA -----------------
       document
         .getElementById("ideaForm")
         .addEventListener("submit", async (e) => {
-          e.preventDefault();
+          e.preventDefault(); // Previene refresh pagina
           const newIdea = {
             author: document.getElementById("author").value,
             title: document.getElementById("title").value,
             description: document.getElementById("description").value,
             category: document.getElementById("category").value,
             status: document.getElementById("status").value,
-            likes: 0,
+            likes: 0, // Valore iniziale
           };
           const res = await fetch(API_URL, {
             method: "POST",
@@ -147,12 +173,12 @@
           });
           if (res.ok) {
             showToast("Idea pubblicata con successo!", "success");
-            e.target.reset();
-            fetchIdeas();
+            e.target.reset(); // Reset form
+            fetchIdeas(); // Aggiorna lista
           } else showToast("Errore nella pubblicazione", "error");
         });
 
-      // Modifica idea
+      // ----------------- MODIFICA IDEA -----------------
       async function editIdea(id) {
         const newTitle = prompt("Nuovo titolo:");
         const newDesc = prompt("Nuova descrizione:");
@@ -179,7 +205,7 @@
         } else showToast("Errore durante l’aggiornamento", "error");
       }
 
-      // Eliminazione idea
+      // ----------------- ELIMINA IDEA -----------------
       async function deleteIdea(id) {
         if (confirm("Vuoi davvero eliminare questa idea?")) {
           const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
@@ -190,7 +216,7 @@
         }
       }
 
-      // Mi piace
+      // ----------------- MI PIACE -----------------
       async function likeIdea(id) {
         const res = await fetch(`${API_URL}/${id}`);
         const idea = await res.json();
@@ -206,8 +232,8 @@
         } else showToast("Errore nel mettere Mi Piace", "error");
       }
 
-      // Carica idee all'avvio
-      fetchIdeas();
+      // ----------------- AVVIO -----------------
+      fetchIdeas(); // Carica tutte le idee all’avvio
     </script>
   </body>
 </html>

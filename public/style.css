@@ -1,14 +1,14 @@
-/* ------------------- RESET ------------------- */
+/* ------------------- RESET BASE ------------------- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* ------------------- BODY ------------------- */
 body {
-  background-color: #f9f9f9;
+  background-color: #f4f6f8;
   color: #333;
   transition:
     background-color 0.3s,
@@ -16,10 +16,10 @@ body {
   padding: 20px;
 }
 
-/* ------------------- TEMA DARK ------------------- */
+/* ------------------- DARK THEME ------------------- */
 body.dark {
-  background-color: #1e1e1e;
-  color: #f0f0f0;
+  background-color: #121212;
+  color: #e0e0e0;
 }
 
 /* ------------------- HEADER ------------------- */
@@ -27,101 +27,131 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 header h1 {
   font-size: 2rem;
+  color: #3498db;
 }
 
 #themeToggle {
-  padding: 6px 12px;
+  padding: 8px 14px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #3498db;
+  color: white;
+  transition: background 0.3s;
+}
+
+#themeToggle:hover {
+  background-color: #217dbb;
 }
 
 /* ------------------- FORM ------------------- */
 form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 30px;
   background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: background 0.3s;
 }
 
 body.dark form {
-  background: #2a2a2a;
+  background: #1f1f1f;
 }
 
 form input,
 form textarea,
 form select {
-  padding: 8px;
-  border-radius: 5px;
+  padding: 10px;
+  border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 1rem;
+  transition: border-color 0.2s;
 }
 
 body.dark form input,
 body.dark form textarea,
 body.dark form select {
   border: 1px solid #555;
-  background-color: #333;
-  color: #f0f0f0;
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+  outline: none;
+  border-color: #3498db;
 }
 
 form button {
-  padding: 10px;
-  background-color: #3498db;
+  padding: 12px;
   border: none;
+  border-radius: 10px;
+  background-color: #3498db;
   color: white;
   font-size: 1rem;
-  border-radius: 5px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
+  transition:
+    transform 0.2s,
+    background 0.3s;
 }
 
 form button:hover {
-  background-color: #2980b9;
+  background-color: #217dbb;
+  transform: translateY(-2px);
 }
 
 /* ------------------- LISTA IDEE ------------------- */
 #ideasList {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
 }
 
 .idea {
   background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s;
+  padding: 18px;
+  border-radius: 15px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition:
+    background 0.3s,
+    transform 0.2s;
 }
 
 body.dark .idea {
-  background: #2a2a2a;
+  background: #1f1f1f;
 }
 
-/* Titolo e status */
+.idea:hover {
+  transform: translateY(-3px);
+}
+
+/* ------------------- TITOLO E STATUS ------------------- */
 .idea h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  font-size: 1.2rem;
 }
 
 .status {
-  padding: 2px 8px;
-  border-radius: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
   color: white;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   text-transform: capitalize;
+  font-weight: bold;
 }
 
 .status.in-corso {
@@ -134,9 +164,10 @@ body.dark .idea {
   background-color: #c0392b;
 } /* rosso */
 
-/* Descrizione e info */
+/* ------------------- DESCRIZIONE E INFO ------------------- */
 .idea p {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  line-height: 1.4;
 }
 
 .idea small {
@@ -151,38 +182,47 @@ body.dark .idea small {
 .idea-buttons {
   display: flex;
   gap: 10px;
+  margin-top: 10px;
 }
 
 .idea-buttons button {
-  padding: 5px 10px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: 0.2s;
   font-size: 0.9rem;
+  font-weight: bold;
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
 }
 
-.idea-buttons button.like {
+.idea-buttons button:hover {
+  transform: translateY(-2px);
+}
+
+/* Like */
+.idea-buttons .like {
   background-color: #e74c3c;
   color: white;
 }
 
-.idea-buttons button.like:hover {
+.idea-buttons .like:hover {
   background-color: #c0392b;
 }
 
+/* Modifica */
 .idea-buttons button:nth-child(2) {
-  /* Modifica */
   background-color: #3498db;
   color: white;
 }
 
 .idea-buttons button:nth-child(2):hover {
-  background-color: #2980b9;
+  background-color: #217dbb;
 }
 
+/* Elimina */
 .idea-buttons button:nth-child(3) {
-  /* Elimina */
   background-color: #f39c12;
   color: white;
 }
@@ -194,10 +234,10 @@ body.dark .idea small {
 /* ------------------- TOAST ------------------- */
 #toast {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  border-radius: 8px;
+  top: 25px;
+  right: 25px;
+  padding: 14px 20px;
+  border-radius: 12px;
   color: white;
   font-weight: bold;
   opacity: 0;
@@ -207,4 +247,5 @@ body.dark .idea small {
     opacity 0.3s,
     transform 0.3s;
   z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
