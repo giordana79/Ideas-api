@@ -1,132 +1,88 @@
 <!doctype html>
 <html lang="it">
+  <!-- Tipo documento e lingua della pagina -->
+
   <head>
-    <!-- Imposta codifica caratteri -->
     <meta charset="UTF-8" />
-    <!-- Rende la pagina responsive -->
+    <!-- Codifica dei caratteri UTF-8 -->
+    <!-- Rende la pagina responsive su dispositivi mobili -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Icona scheda browser -->
     <link rel="icon" href="idea.png" />
-    <!-- Titolo pagina -->
+    <!-- Icona mostrata nella scheda del browser -->
     <title>Bacheca Idee</title>
-    <!-- Collegamento foglio di stile -->
+    <!-- Titolo della pagina -->
     <link rel="stylesheet" href="style.css" />
-    <style>
-      /* ================= STILE MODALE ================= */
-      .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
-
-      .modal-content {
-        background: var(--card-bg, #fff);
-        color: var(--text-color, #000);
-        padding: 20px;
-        border-radius: 12px;
-        width: 90%;
-        max-width: 400px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      }
-
-      .modal-content input,
-      .modal-content textarea,
-      .modal-content select {
-        width: 100%;
-        margin-bottom: 10px;
-        padding: 8px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-      }
-
-      .modal-buttons {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-      }
-
-      .modal-buttons button {
-        padding: 8px 14px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-
-      .save-btn {
-        background: #27ae60;
-        color: #fff;
-      }
-
-      .cancel-btn {
-        background: #c0392b;
-        color: #fff;
-      }
-    </style>
+    <!-- Collega il file CSS esterno -->
   </head>
 
   <body>
-    <!-- ======================= HEADER ======================= -->
+    <!-- HEADER: titolo e toggle tema -->
     <header>
       <h1>💡 Bacheca Idee</h1>
-      <!-- Bottone tema -->
+      <!-- Titolo principale visuale -->
+      <!-- Pulsante per cambiare il tema chiaro/scuro -->
       <button id="themeToggle">🌙</button>
     </header>
 
-    <!-- ======================= MAIN ======================= -->
+    <!-- MAIN: form di inserimento e lista idee -->
     <main>
-      <!-- ===== FORM per nuove idee ===== -->
+      <!-- FORM per aggiungere una nuova idea -->
       <form id="ideaForm">
         <input type="text" id="author" placeholder="Autore" required />
+        <!-- Campo testo: nome autore (obbligatorio) -->
         <input type="text" id="title" placeholder="Titolo dell’idea" required />
+        <!-- Campo testo: titolo dell'idea (obbligatorio) -->
         <textarea
           id="description"
           placeholder="Descrizione"
           required
         ></textarea>
+        <!-- Area testo: descrizione dell'idea (obbligatoria) -->
 
+        <!-- Select: categoria dell'idea -->
         <select id="category" required>
           <option value="">Seleziona una categoria</option>
+          <!-- Opzione vuota placeholder -->
           <option value="tecnologia">Tecnologia</option>
           <option value="educazione">Educazione</option>
           <option value="ambiente">Ambiente</option>
           <option value="altro">Altro</option>
         </select>
 
+        <!-- Select: stato iniziale dell'idea -->
         <select id="status" required>
           <option value="in corso">In corso</option>
           <option value="approvata">Approvata</option>
           <option value="scartata">Scartata</option>
         </select>
 
+        <!-- Bottone per inviare il form -->
         <button type="submit">💾 Pubblica idea</button>
       </form>
 
-      <!-- Contenitore delle idee -->
+      <!-- Contenitore dinamico dove saranno inserite le card delle idee -->
       <div id="ideasList"></div>
     </main>
 
-    <!-- Toast messaggi -->
+    <!-- Contenitore per i toast (notifiche temporanee) -->
     <div id="toast"></div>
 
-    <!-- ================= MODALE DI MODIFICA ================= -->
+    <!-- MODALE per la modifica (hidden fino all'apertura) -->
     <div class="modal" id="editModal">
       <div class="modal-content">
         <h3>✏️ Modifica Idea</h3>
+        <!-- Titolo modale -->
         <input type="text" id="editTitle" placeholder="Titolo" />
+        <!-- Campo titolo nella modale -->
         <textarea id="editDesc" placeholder="Descrizione"></textarea>
+        <!-- Campo descrizione nella modale -->
         <select id="editStatus">
+          <!-- Select stato nella modale -->
           <option value="in corso">In corso</option>
           <option value="approvata">Approvata</option>
           <option value="scartata">Scartata</option>
         </select>
+        <!-- Bottoni Salva / Annulla nella modale -->
         <div class="modal-buttons">
           <button class="save-btn" id="saveEdit">💾 Salva</button>
           <button class="cancel-btn" id="cancelEdit">❌ Annulla</button>
@@ -134,65 +90,71 @@
       </div>
     </div>
 
-    <!-- ======================= SCRIPT ======================= -->
+    <!-- SCRIPT: logica frontend (fetch, CRUD, modale, toast, tema) -->
     <script>
-      const API_URL = "http://localhost:3000/api/ideas"; // API backend
+      const API_URL = "http://localhost:3000/api/ideas"; // URL base dell'API REST
 
-      // ===================== GESTIONE TEMA =====================
-      const themeBtn = document.getElementById("themeToggle");
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "dark") document.body.classList.add("dark");
+      // --- GESTIONE TEMA (chiaro/scuro) ---
+      const themeBtn = document.getElementById("themeToggle"); // riferimento al bottone tema
+      const savedTheme = localStorage.getItem("theme"); // legge preferenza dal localStorage
+      if (savedTheme === "dark") document.body.classList.add("dark"); // applica tema se salvato
+      // imposta icona corretta al caricamento
       themeBtn.textContent = document.body.classList.contains("dark")
         ? "☀️"
         : "🌙";
+      // evento click per cambiare tema
       themeBtn.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
-        const isDark = document.body.classList.contains("dark");
-        themeBtn.textContent = isDark ? "☀️" : "🌙";
-        localStorage.setItem("theme", isDark ? "dark" : "light");
+        document.body.classList.toggle("dark"); // alterna classe dark
+        const isDark = document.body.classList.contains("dark"); // stato attuale
+        themeBtn.textContent = isDark ? "☀️" : "🌙"; // aggiorna icona
+        localStorage.setItem("theme", isDark ? "dark" : "light"); // salva preferenza
       });
 
-      // ===================== TOAST =====================
+      // --- TOAST (notifiche temporanee) ---
       function showToast(message, type = "success") {
-        const toast = document.getElementById("toast");
+        const toast = document.getElementById("toast"); // riferimento al div toast
+        // configurazione colori e icone per i tipi
         const config = {
           success: { color: "#27ae60", icon: "✅" },
           error: { color: "#c0392b", icon: "❌" },
           warning: { color: "#f39c12", icon: "⚠️" },
           info: { color: "#3498db", icon: "💡" },
         };
-        const { color, icon } = config[type] || config.info;
-        toast.textContent = `${icon} ${message}`;
-        toast.style.backgroundColor = color;
-        toast.style.opacity = "1";
-        toast.style.transform = "translateY(0)";
+        const { color, icon } = config[type] || config.info; // fallback su info
+        toast.textContent = `${icon} ${message}`; // testo + icona
+        toast.style.backgroundColor = color; // colore di sfondo
+        toast.style.opacity = "1"; // mostra toast
+        toast.style.transform = "translateY(0)"; // posizione visibile
+        // nascondi dopo 2.5 secondi
         setTimeout(() => {
           toast.style.opacity = "0";
           toast.style.transform = "translateY(-20px)";
         }, 2500);
       }
 
-      // ===================== ESCAPE HTML =====================
+      // --- ESCAPE HTML (semplice) per prevenire XSS quando inseriamo markup da user ---
       function escapeHtml(s) {
-        if (!s) return "";
+        if (!s) return ""; // se vuoto ritorna stringa vuota
         return s
           .replaceAll("&", "&amp;")
           .replaceAll("<", "&lt;")
           .replaceAll(">", "&gt;")
           .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#39;");
+          .replaceAll("'", "&#39;"); // sostituisce caratteri speciali con entità
       }
 
-      // ===================== CARICA IDEE =====================
+      // --- FETCH E RENDER DELLE IDEE ---
       async function fetchIdeas() {
         try {
-          const res = await fetch(API_URL);
-          const ideas = await res.json();
-          const list = document.getElementById("ideasList");
-          list.innerHTML = "";
+          const res = await fetch(API_URL); // GET /api/ideas
+          const ideas = await res.json(); // parse JSON
+          const list = document.getElementById("ideasList"); // contenitore
+          list.innerHTML = ""; // svuota il contenitore prima di inserire
           ideas.forEach((idea) => {
-            const div = document.createElement("div");
-            div.className = "idea";
+            // per ogni idea ricevuta
+            const div = document.createElement("div"); // crea una card
+            div.className = "idea"; // assegna classe per lo styling
+            // innerHTML della card: titolo, status, descrizione, autore, categoria, data, bottoni
             div.innerHTML = `
               <h3>${escapeHtml(idea.title)}
                 <span class="status ${
@@ -215,83 +177,88 @@
                 <button onclick="deleteIdea('${idea._id}')">🗑️ Elimina</button>
               </div>
             `;
-            list.appendChild(div);
+            list.appendChild(div); // aggiunge la card al DOM
           });
         } catch (err) {
+          // in caso di errore (es. server non raggiungibile) mostra toast
           showToast("Errore nel caricare le idee", "error");
         }
       }
 
-      // ===================== PUBBLICA NUOVA IDEA =====================
+      // --- CREAZIONE NUOVA IDEA (POST) ---
       document
         .getElementById("ideaForm")
         .addEventListener("submit", async (e) => {
-          e.preventDefault();
+          e.preventDefault(); // impedisce reload della pagina
+          // costruisce l'oggetto idea dai campi del form
           const newIdea = {
             author: document.getElementById("author").value,
             title: document.getElementById("title").value,
             description: document.getElementById("description").value,
             category: document.getElementById("category").value,
             status: document.getElementById("status").value,
-            likes: 0,
+            likes: 0, // inizializza likes a 0
           };
+          // invia la richiesta POST per creare la nuova idea
           const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newIdea),
           });
           if (res.ok) {
-            showToast("Idea pubblicata!", "success");
-            e.target.reset();
-            fetchIdeas();
-          } else showToast("Errore nella pubblicazione", "error");
+            showToast("Idea pubblicata!", "success"); // notifica successo
+            e.target.reset(); // pulisce il form
+            fetchIdeas(); // ricarica la lista delle idee
+          } else showToast("Errore nella pubblicazione", "error"); // notifica errore
         });
 
-      // ===================== MODALE DI MODIFICA =====================
-      const modal = document.getElementById("editModal");
-      const editTitle = document.getElementById("editTitle");
-      const editDesc = document.getElementById("editDesc");
-      const editStatus = document.getElementById("editStatus");
-      let currentId = null; // ID idea in modifica
+      // --- MODALE DI MODIFICA ---
+      const modal = document.getElementById("editModal"); // elemento modale
+      const editTitle = document.getElementById("editTitle"); // input titolo nella modale
+      const editDesc = document.getElementById("editDesc"); // textarea descrizione nella modale
+      const editStatus = document.getElementById("editStatus"); // select status nella modale
+      let currentId = null; // variabile per tenere traccia dell'idea in modifica
 
-      // Apri la modale
+      // funzione per aprire la modale e precompilare i campi con i dati correnti
       async function openEditModal(id) {
-        currentId = id;
-        const res = await fetch(`${API_URL}/${id}`);
-        const idea = await res.json();
-        editTitle.value = idea.title;
-        editDesc.value = idea.description;
-        editStatus.value = idea.status;
-        modal.style.display = "flex"; // Mostra modale
+        currentId = id; // salva id corrente
+        const res = await fetch(`${API_URL}/${id}`); // fetch GET /api/ideas/:id
+        const idea = await res.json(); // parse JSON
+        editTitle.value = idea.title; // imposta titolo nella modale
+        editDesc.value = idea.description; // imposta descrizione
+        editStatus.value = idea.status; // imposta status
+        modal.style.display = "flex"; // mostra la modale (css gestisce visibilità)
       }
 
-      // Chiudi la modale
+      // chiudi modale al click sul bottone Annulla
       document.getElementById("cancelEdit").onclick = () => {
-        modal.style.display = "none";
+        modal.style.display = "none"; // nasconde modale
       };
 
-      // Salva le modifiche
+      // salva le modifiche quando si clicca Salva nella modale
       document.getElementById("saveEdit").onclick = async () => {
-        const newTitle = editTitle.value.trim();
-        const newDesc = editDesc.value.trim();
-        const newStatus = editStatus.value.trim();
+        const newTitle = editTitle.value.trim(); // valore titolo normalizzato
+        const newDesc = editDesc.value.trim(); // valore descrizione normalizzato
+        const newStatus = editStatus.value.trim(); // valore status normalizzato
 
-        // Controllo validità status
+        // validazione dello status: deve essere uno dei tre consentiti
         const validStatus = ["in corso", "approvata", "scartata"];
         if (!validStatus.includes(newStatus.toLowerCase())) {
           showToast(
             "Status non valido! Usa: in corso, approvata o scartata.",
             "error"
           );
-          return;
+          return; // non procede con la PATCH se status non valido
         }
 
+        // costruisce l'oggetto da inviare: includo i campi aggiornati
         const body = {
           title: newTitle,
           description: newDesc,
           status: newStatus,
         };
 
+        // invia PATCH al backend per aggiornare l'idea
         const res = await fetch(`${API_URL}/${currentId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -299,41 +266,43 @@
         });
 
         if (res.ok) {
-          showToast("Idea aggiornata!", "info");
-          modal.style.display = "none";
-          fetchIdeas();
-        } else showToast("Errore durante l’aggiornamento", "error");
+          showToast("Idea aggiornata!", "info"); // notifica aggiornamento
+          modal.style.display = "none"; // nasconde modale
+          fetchIdeas(); // ricarica lista idee per mostrare aggiornamento
+        } else showToast("Errore durante l’aggiornamento", "error"); // notifica errore
       };
 
-      // ===================== ELIMINA IDEA =====================
+      // --- ELIMINA IDEA (DELETE) ---
       async function deleteIdea(id) {
         if (confirm("Vuoi davvero eliminare questa idea?")) {
-          const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+          // conferma utente
+          const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" }); // DELETE
           if (res.ok) {
-            showToast("Idea eliminata", "warning");
-            fetchIdeas();
-          } else showToast("Errore durante la cancellazione", "error");
+            showToast("Idea eliminata", "warning"); // notifica eliminazione
+            fetchIdeas(); // ricarica lista
+          } else showToast("Errore durante la cancellazione", "error"); // errore
         }
       }
 
-      // ===================== METTI MI PIACE =====================
+      // --- LIKE IDEA (PATCH per likes) ---
       async function likeIdea(id) {
-        const res = await fetch(`${API_URL}/${id}`);
-        const idea = await res.json();
-        const newLikes = (idea.likes || 0) + 1;
+        const res = await fetch(`${API_URL}/${id}`); // GET idea singola
+        const idea = await res.json(); // parse JSON
+        const newLikes = (idea.likes || 0) + 1; // incrementa likes
+        // invia PATCH per aggiornare il campo likes
         const updateRes = await fetch(`${API_URL}/${id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ likes: newLikes }),
         });
         if (updateRes.ok) {
-          showToast('Hai messo "Mi piace"!', "success");
-          fetchIdeas();
-        } else showToast("Errore nel mettere Mi Piace", "error");
+          showToast('Hai messo "Mi piace"!', "success"); // notifica
+          fetchIdeas(); // ricarica liste per aggiornare contatori
+        } else showToast("Errore nel mettere Mi Piace", "error"); // errore
       }
 
-      // ===================== AVVIO =====================
-      fetchIdeas();
+      // --- AVVIO: carica le idee al caricamento della pagina ---
+      fetchIdeas(); // richiama la funzione che popola la lista all'apertura
     </script>
   </body>
 </html>

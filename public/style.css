@@ -1,270 +1,338 @@
-/* ==============================
-   STILE BASE GENERALE
-   ============================== */
-:root {
-  /* Colori tema chiaro */
-  --bg-color: #f8f9fa;
-  --text-color: #222;
-  --card-bg: #ffffff;
-  --accent-color: #3498db;
-  --border-color: #ddd;
-}
+/*  FONT E RESET  */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 
-/* Tema scuro */
-body.dark {
-  --bg-color: #1e1e1e;
-  --text-color: #f5f5f5;
-  --card-bg: #2b2b2b;
-  --accent-color: #4dabf7;
-  --border-color: #444;
-}
-
-/* Imposta i colori e il font di base */
-body {
-  font-family: "Poppins", sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+* {
   margin: 0;
   padding: 0;
-  transition:
-    background 0.3s,
-    color 0.3s;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
-/* ==============================
-   HEADER
-   ============================== */
+body {
+  background: #f8f9fb; /* chiaro elegante */
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition:
+    background 0.4s,
+    color 0.4s;
+}
+
+/*  HEADER  */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--accent-color);
-  color: white;
+  background: #ffffff;
   padding: 1rem 2rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-/* Titolo principale */
 header h1 {
-  margin: 0;
   font-size: 1.6rem;
+  color: #1a1a1a;
 }
 
-/* Bottone per il cambio tema */
 #themeToggle {
-  background: white;
-  color: var(--accent-color);
+  background: none;
   border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
 #themeToggle:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
-/* ==============================
-   FORM NUOVA IDEA
-   ============================== */
-form {
+/*  MAIN  */
+main {
+  width: 90%;
+  max-width: 900px;
+  margin: 2rem auto;
+}
+
+/*  FORM */
+#ideaForm {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 2rem auto;
-  width: 90%;
-  max-width: 600px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.4s;
 }
 
-/* Input e textarea */
-input,
-textarea,
-select {
-  padding: 0.7rem;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-color);
-  color: var(--text-color);
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-/* Effetto al focus */
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--accent-color);
-}
-
-/* Bottone di pubblicazione */
-button[type="submit"] {
-  background: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
+#ideaForm input,
+#ideaForm textarea,
+#ideaForm select {
   padding: 0.8rem;
-  font-weight: bold;
-  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid #d0d0d0;
+  font-size: 1rem;
   transition:
-    background 0.2s,
-    transform 0.2s;
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
-button[type="submit"]:hover {
-  background: #2c80c9;
-  transform: scale(1.03);
+#ideaForm input:focus,
+#ideaForm textarea:focus,
+#ideaForm select:focus {
+  border-color: #0077ff;
+  box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.2);
+  outline: none;
 }
 
-/* ==============================
-   LISTA DELLE IDEE
-   ============================== */
+#ideaForm button {
+  padding: 0.8rem;
+  background: #0077ff;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition:
+    background 0.3s,
+    transform 0.1s;
+}
+
+#ideaForm button:hover {
+  background: #005fd6;
+}
+
+#ideaForm button:active {
+  transform: scale(0.98);
+}
+
+/*  LISTA IDEE  */
 #ideasList {
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  width: 90%;
-  max-width: 700px;
-  margin: 0 auto 3rem;
+  gap: 1rem;
 }
 
-/* Singola idea */
 .idea {
-  background: var(--card-bg);
-  padding: 1rem 1.2rem;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
   transition:
     transform 0.2s,
-    box-shadow 0.2s;
+    box-shadow 0.3s,
+    background 0.4s;
 }
 
-/* Effetto hover sulle card */
 .idea:hover {
-  transform: scale(1.01);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.12);
 }
 
-/* Titolo e stato */
 .idea h3 {
-  margin-top: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 1.2rem;
+  color: #222;
 }
 
-/* Badge stato idea */
-.status {
-  padding: 0.2rem 0.6rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  font-weight: 600;
+.idea p {
+  margin: 0.5rem 0;
+  line-height: 1.5;
+  color: #444;
 }
 
-/* Colori per i diversi stati */
-.status.in-corso {
+.idea small {
+  color: #777;
+}
+
+.idea-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+/*  BOTTONI IDEA  */
+.idea-buttons button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.idea-buttons .like {
+  background: #ff4d4f;
+  color: white;
+}
+
+.idea-buttons .like:hover {
+  background: #e03638;
+}
+
+.idea-buttons button:nth-child(2) {
+  background: #3498db;
+  color: white;
+}
+
+.idea-buttons button:nth-child(2):hover {
+  background: #2e83c7;
+}
+
+.idea-buttons button:nth-child(3) {
   background: #f1c40f;
   color: #222;
 }
 
-.status.approvata {
-  background: #2ecc71;
+.idea-buttons button:nth-child(3):hover {
+  background: #dab10a;
+}
+
+/*  STATUS  */
+.status {
+  text-transform: capitalize;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
   color: white;
+}
+
+.status.in-corso {
+  background: #f39c12;
+}
+
+.status.approvata {
+  background: #27ae60;
 }
 
 .status.scartata {
   background: #e74c3c;
-  color: white;
 }
 
-/* Testo descrizione */
-.idea p {
-  margin: 0.5rem 0 0.5rem;
-  line-height: 1.4;
-}
-
-/* Autore e categoria */
-.idea small {
-  display: block;
-  color: gray;
-  margin-bottom: 0.8rem;
-}
-
-/* Bottoni azione */
-.idea-buttons {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.idea-buttons button {
-  flex: 1;
-  background: var(--accent-color);
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
-
-/* Hover differenziato */
-.idea-buttons button:hover {
-  background: #2c80c9;
-}
-
-/* Bottone “Mi piace” */
-.idea-buttons .like {
-  background: #e74c3c;
-}
-
-.idea-buttons .like:hover {
-  background: #c0392b;
-}
-
-/* ==============================
-   TOAST DI NOTIFICA
-   ============================== */
+/* TOAST  */
 #toast {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  background: var(--accent-color);
+  top: 1.2rem;
+  right: 1.2rem;
+  background: #333;
   color: white;
   padding: 0.8rem 1.2rem;
   border-radius: 8px;
   opacity: 0;
   transform: translateY(-20px);
-  transition:
-    opacity 0.4s,
-    transform 0.4s;
+  transition: all 0.4s ease;
+  z-index: 999;
   pointer-events: none;
+}
+
+/* DARK THEME  */
+body.dark {
+  background: #121212;
+  color: #ddd;
+}
+
+body.dark header {
+  background: #1e1e1e;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
+}
+
+body.dark #ideaForm {
+  background: #1e1e1e;
+  box-shadow: 0 3px 12px rgba(255, 255, 255, 0.05);
+}
+
+body.dark input,
+body.dark textarea,
+body.dark select {
+  background: #2a2a2a;
+  color: #eee;
+  border-color: #444;
+}
+
+body.dark input:focus,
+body.dark textarea:focus,
+body.dark select:focus {
+  border-color: #5daeff;
+  box-shadow: 0 0 0 3px rgba(93, 174, 255, 0.25);
+}
+
+body.dark .idea {
+  background: #1f1f1f;
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.04);
+}
+
+body.dark .idea h3 {
+  color: #eee;
+}
+
+body.dark .idea p {
+  color: #ccc;
+}
+
+body.dark .idea small {
+  color: #aaa;
+}
+
+/*  STILE MODALE */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
+}
+
+.modal-content {
+  background: var(--card-bg, #fff);
+  color: var(--text-color, #000);
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
   font-weight: bold;
 }
 
-/* ==============================
-   RESPONSIVITÀ MOBILE
-   ============================== */
-@media (max-width: 600px) {
-  header {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+.save-btn {
+  background: #27ae60;
+  color: #fff;
+}
 
-  form {
-    padding: 1rem;
-  }
-
-  #ideasList {
-    width: 95%;
-  }
+.cancel-btn {
+  background: #c0392b;
+  color: #fff;
 }
