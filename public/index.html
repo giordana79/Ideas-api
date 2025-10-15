@@ -1,112 +1,179 @@
 <!doctype html>
 <html lang="it">
   <head>
+    <!-- Imposta codifica caratteri -->
     <meta charset="UTF-8" />
-    <!-- Codifica caratteri UTF-8 -->
+    <!-- Rende la pagina responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Adatta la pagina ai dispositivi mobili -->
+    <!-- Icona scheda browser -->
     <link rel="icon" href="idea.png" />
-    <!-- Icona della pagina -->
+    <!-- Titolo pagina -->
     <title>Bacheca Idee</title>
-    <!-- Titolo della pagina -->
+    <!-- Collegamento foglio di stile -->
     <link rel="stylesheet" href="style.css" />
-    <!-- Collegamento al CSS esterno -->
+    <style>
+      /* ================= STILE MODALE ================= */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background: var(--card-bg, #fff);
+        color: var(--text-color, #000);
+        padding: 20px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-content input,
+      .modal-content textarea,
+      .modal-content select {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      .modal-buttons button {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .save-btn {
+        background: #27ae60;
+        color: #fff;
+      }
+
+      .cancel-btn {
+        background: #c0392b;
+        color: #fff;
+      }
+    </style>
   </head>
 
   <body>
-    <!-- HEADER -->
+    <!-- ======================= HEADER ======================= -->
     <header>
       <h1>💡 Bacheca Idee</h1>
-      <!-- Titolo principale -->
+      <!-- Bottone tema -->
       <button id="themeToggle">🌙</button>
-      <!-- Bottone per cambiare tema -->
     </header>
 
-    <!-- MAIN -->
+    <!-- ======================= MAIN ======================= -->
     <main>
-      <!-- Form per inserire nuove idee -->
+      <!-- ===== FORM per nuove idee ===== -->
       <form id="ideaForm">
         <input type="text" id="author" placeholder="Autore" required />
-        <!-- Nome autore -->
         <input type="text" id="title" placeholder="Titolo dell’idea" required />
-        <!-- Titolo idea -->
         <textarea
           id="description"
           placeholder="Descrizione"
           required
         ></textarea>
-        <!-- Descrizione idea -->
+
         <select id="category" required>
-          <!-- Categoria dell’idea -->
           <option value="">Seleziona una categoria</option>
           <option value="tecnologia">Tecnologia</option>
           <option value="educazione">Educazione</option>
           <option value="ambiente">Ambiente</option>
           <option value="altro">Altro</option>
         </select>
+
         <select id="status" required>
-          <!-- Stato iniziale dell’idea -->
           <option value="in corso">In corso</option>
           <option value="approvata">Approvata</option>
           <option value="scartata">Scartata</option>
         </select>
+
         <button type="submit">💾 Pubblica idea</button>
-        <!-- Pulsante invio -->
       </form>
 
-      <!-- Contenitore dove verranno inserite tutte le idee -->
+      <!-- Contenitore delle idee -->
       <div id="ideasList"></div>
     </main>
 
-    <!-- Contenitore toast per messaggi temporanei -->
+    <!-- Toast messaggi -->
     <div id="toast"></div>
 
-    <script>
-      const API_URL = "http://localhost:3000/api/ideas"; // URL API backend
+    <!-- ================= MODALE DI MODIFICA ================= -->
+    <div class="modal" id="editModal">
+      <div class="modal-content">
+        <h3>✏️ Modifica Idea</h3>
+        <input type="text" id="editTitle" placeholder="Titolo" />
+        <textarea id="editDesc" placeholder="Descrizione"></textarea>
+        <select id="editStatus">
+          <option value="in corso">In corso</option>
+          <option value="approvata">Approvata</option>
+          <option value="scartata">Scartata</option>
+        </select>
+        <div class="modal-buttons">
+          <button class="save-btn" id="saveEdit">💾 Salva</button>
+          <button class="cancel-btn" id="cancelEdit">❌ Annulla</button>
+        </div>
+      </div>
+    </div>
 
-      //  TEMA
-      const themeBtn = document.getElementById("themeToggle"); // Bottone tema
-      const savedTheme = localStorage.getItem("theme"); // Recupera tema salvato
-      if (savedTheme === "dark") document.body.classList.add("dark"); // Applica tema dark se salvato
+    <!-- ======================= SCRIPT ======================= -->
+    <script>
+      const API_URL = "http://localhost:3000/api/ideas"; // API backend
+
+      // ===================== GESTIONE TEMA =====================
+      const themeBtn = document.getElementById("themeToggle");
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") document.body.classList.add("dark");
       themeBtn.textContent = document.body.classList.contains("dark")
         ? "☀️"
-        : "🌙"; // Imposta icona
-
+        : "🌙";
       themeBtn.addEventListener("click", () => {
-        // Cambio tema al click
         document.body.classList.toggle("dark");
         const isDark = document.body.classList.contains("dark");
         themeBtn.textContent = isDark ? "☀️" : "🌙";
-        localStorage.setItem("theme", isDark ? "dark" : "light"); // Salva scelta
+        localStorage.setItem("theme", isDark ? "dark" : "light");
       });
 
-      // TOAST
+      // ===================== TOAST =====================
       function showToast(message, type = "success") {
         const toast = document.getElementById("toast");
         const config = {
-          // Colori e icone per tipo di messaggio
           success: { color: "#27ae60", icon: "✅" },
           error: { color: "#c0392b", icon: "❌" },
           warning: { color: "#f39c12", icon: "⚠️" },
           info: { color: "#3498db", icon: "💡" },
         };
         const { color, icon } = config[type] || config.info;
-        toast.textContent = `${icon} ${message}`; // Testo toast
+        toast.textContent = `${icon} ${message}`;
         toast.style.backgroundColor = color;
         toast.style.opacity = "1";
         toast.style.transform = "translateY(0)";
-        toast.style.pointerEvents = "auto";
         setTimeout(() => {
-          // Nasconde dopo 2,5s
           toast.style.opacity = "0";
           toast.style.transform = "translateY(-20px)";
-          toast.style.pointerEvents = "none";
         }, 2500);
       }
 
-      //  ESCAPE HTML
+      // ===================== ESCAPE HTML =====================
       function escapeHtml(s) {
-        // Previene XSS
         if (!s) return "";
         return s
           .replaceAll("&", "&amp;")
@@ -116,18 +183,16 @@
           .replaceAll("'", "&#39;");
       }
 
-      // FETCH IDEE
+      // ===================== CARICA IDEE =====================
       async function fetchIdeas() {
-        // Recupera tutte le idee
         try {
           const res = await fetch(API_URL);
           const ideas = await res.json();
           const list = document.getElementById("ideasList");
-          list.innerHTML = ""; // Pulisce contenitore
+          list.innerHTML = "";
           ideas.forEach((idea) => {
-            // Cicla tutte le idee
             const div = document.createElement("div");
-            div.className = "idea"; // Classe card
+            div.className = "idea";
             div.innerHTML = `
               <h3>${escapeHtml(idea.title)}
                 <span class="status ${
@@ -139,32 +204,36 @@
                 }">${idea.status}</span>
               </h3>
               <p>${escapeHtml(idea.description)}</p>
-              <small><b>${escapeHtml(idea.author)}</b> — ${escapeHtml(idea.category)} — ${new Date(idea.createdAt).toLocaleDateString()}</small>
+              <small><b>${escapeHtml(idea.author)}</b> — ${escapeHtml(
+                idea.category
+              )} — ${new Date(idea.createdAt).toLocaleDateString()}</small>
               <div class="idea-buttons">
-                <button class="like" onclick="likeIdea('${idea._id}')">❤️ ${idea.likes ?? 0}</button>
-                <button onclick="editIdea('${idea._id}')">✏️ Modifica</button>
+                <button class="like" onclick="likeIdea('${idea._id}')">❤️ ${
+                  idea.likes ?? 0
+                }</button>
+                <button onclick="openEditModal('${idea._id}')">✏️ Modifica</button>
                 <button onclick="deleteIdea('${idea._id}')">🗑️ Elimina</button>
               </div>
             `;
-            list.appendChild(div); // Aggiunge card al DOM
+            list.appendChild(div);
           });
         } catch (err) {
-          showToast("❌ Errore nel caricare le idee", "error"); // Messaggio errore
+          showToast("Errore nel caricare le idee", "error");
         }
       }
 
-      //  CREAZIONE NUOVA IDEA
+      // ===================== PUBBLICA NUOVA IDEA =====================
       document
         .getElementById("ideaForm")
         .addEventListener("submit", async (e) => {
-          e.preventDefault(); // Previene refresh pagina
+          e.preventDefault();
           const newIdea = {
             author: document.getElementById("author").value,
             title: document.getElementById("title").value,
             description: document.getElementById("description").value,
             category: document.getElementById("category").value,
             status: document.getElementById("status").value,
-            likes: 0, // Valore iniziale
+            likes: 0,
           };
           const res = await fetch(API_URL, {
             method: "POST",
@@ -172,65 +241,82 @@
             body: JSON.stringify(newIdea),
           });
           if (res.ok) {
-            showToast("Idea pubblicata con successo!", "success");
-            e.target.reset(); // Reset form
-            fetchIdeas(); // Aggiorna lista
+            showToast("Idea pubblicata!", "success");
+            e.target.reset();
+            fetchIdeas();
           } else showToast("Errore nella pubblicazione", "error");
         });
 
-      //  MODIFICA IDEA CON CONTROLLO STATUS
-      async function editIdea(id) {
-        // Prompt per titolo e descrizione
-        const newTitle = prompt("Nuovo titolo:");
-        const newDesc = prompt("Nuova descrizione:");
+      // ===================== MODALE DI MODIFICA =====================
+      const modal = document.getElementById("editModal");
+      const editTitle = document.getElementById("editTitle");
+      const editDesc = document.getElementById("editDesc");
+      const editStatus = document.getElementById("editStatus");
+      let currentId = null; // ID idea in modifica
 
-        // Prompt per status
-        let newStatus = prompt("Nuovo status (in corso, approvata, scartata):");
+      // Apri la modale
+      async function openEditModal(id) {
+        currentId = id;
+        const res = await fetch(`${API_URL}/${id}`);
+        const idea = await res.json();
+        editTitle.value = idea.title;
+        editDesc.value = idea.description;
+        editStatus.value = idea.status;
+        modal.style.display = "flex"; // Mostra modale
+      }
 
-        // Se l’utente non inserisce nulla, esce
-        if (!newTitle && !newDesc && !newStatus) return;
+      // Chiudi la modale
+      document.getElementById("cancelEdit").onclick = () => {
+        modal.style.display = "none";
+      };
 
-        // Validazione dello status
+      // Salva le modifiche
+      document.getElementById("saveEdit").onclick = async () => {
+        const newTitle = editTitle.value.trim();
+        const newDesc = editDesc.value.trim();
+        const newStatus = editStatus.value.trim();
+
+        // Controllo validità status
         const validStatus = ["in corso", "approvata", "scartata"];
-        if (newStatus) {
-          newStatus = newStatus.toLowerCase().trim();
-          if (!validStatus.includes(newStatus)) {
-            showToast("⚠️ Status non valido! Modifica annullata.", "warning");
-            return; // Esce senza fare la richiesta PATCH
-          }
+        if (!validStatus.includes(newStatus.toLowerCase())) {
+          showToast(
+            "Status non valido! Usa: in corso, approvata o scartata.",
+            "error"
+          );
+          return;
         }
 
-        // Prepara il corpo della richiesta solo con i campi inseriti
-        const body = {};
-        if (newTitle) body.title = newTitle;
-        if (newDesc) body.description = newDesc;
-        if (newStatus) body.status = newStatus;
+        const body = {
+          title: newTitle,
+          description: newDesc,
+          status: newStatus,
+        };
 
-        // Invia la richiesta PATCH solo se ci sono campi validi
-        const res = await fetch(`${API_URL}/${id}`, {
+        const res = await fetch(`${API_URL}/${currentId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
 
         if (res.ok) {
-          showToast("Idea aggiornata con successo!", "info");
-          fetchIdeas(); // Aggiorna la lista
+          showToast("Idea aggiornata!", "info");
+          modal.style.display = "none";
+          fetchIdeas();
         } else showToast("Errore durante l’aggiornamento", "error");
-      }
+      };
 
-      // ELIMINA IDEA
+      // ===================== ELIMINA IDEA =====================
       async function deleteIdea(id) {
         if (confirm("Vuoi davvero eliminare questa idea?")) {
           const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
           if (res.ok) {
-            showToast("Idea eliminata con successo", "warning");
+            showToast("Idea eliminata", "warning");
             fetchIdeas();
           } else showToast("Errore durante la cancellazione", "error");
         }
       }
 
-      // MI PIACE
+      // ===================== METTI MI PIACE =====================
       async function likeIdea(id) {
         const res = await fetch(`${API_URL}/${id}`);
         const idea = await res.json();
@@ -246,8 +332,8 @@
         } else showToast("Errore nel mettere Mi Piace", "error");
       }
 
-      //  AVVIO
-      fetchIdeas(); // Carica tutte le idee all’avvio
+      // ===================== AVVIO =====================
+      fetchIdeas();
     </script>
   </body>
 </html>
