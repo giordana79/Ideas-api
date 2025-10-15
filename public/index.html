@@ -14,7 +14,7 @@
   </head>
 
   <body>
-    <!-- ------------------- HEADER ------------------- -->
+    <!-- HEADER -->
     <header>
       <h1>💡 Bacheca Idee</h1>
       <!-- Titolo principale -->
@@ -22,7 +22,7 @@
       <!-- Bottone per cambiare tema -->
     </header>
 
-    <!-- ------------------- MAIN ------------------- -->
+    <!-- MAIN -->
     <main>
       <!-- Form per inserire nuove idee -->
       <form id="ideaForm">
@@ -64,7 +64,7 @@
     <script>
       const API_URL = "http://localhost:3000/api/ideas"; // URL API backend
 
-      // ----------------- TEMA -----------------
+      //  TEMA
       const themeBtn = document.getElementById("themeToggle"); // Bottone tema
       const savedTheme = localStorage.getItem("theme"); // Recupera tema salvato
       if (savedTheme === "dark") document.body.classList.add("dark"); // Applica tema dark se salvato
@@ -80,7 +80,7 @@
         localStorage.setItem("theme", isDark ? "dark" : "light"); // Salva scelta
       });
 
-      // ----------------- TOAST -----------------
+      // TOAST
       function showToast(message, type = "success") {
         const toast = document.getElementById("toast");
         const config = {
@@ -104,7 +104,7 @@
         }, 2500);
       }
 
-      // ----------------- ESCAPE HTML -----------------
+      //  ESCAPE HTML
       function escapeHtml(s) {
         // Previene XSS
         if (!s) return "";
@@ -116,7 +116,7 @@
           .replaceAll("'", "&#39;");
       }
 
-      // ----------------- FETCH IDEE -----------------
+      // FETCH IDEE
       async function fetchIdeas() {
         // Recupera tutte le idee
         try {
@@ -153,7 +153,7 @@
         }
       }
 
-      // ----------------- CREAZIONE NUOVA IDEA -----------------
+      //  CREAZIONE NUOVA IDEA
       document
         .getElementById("ideaForm")
         .addEventListener("submit", async (e) => {
@@ -178,21 +178,35 @@
           } else showToast("Errore nella pubblicazione", "error");
         });
 
-      // ----------------- MODIFICA IDEA -----------------
+      //  MODIFICA IDEA CON CONTROLLO STATUS
       async function editIdea(id) {
+        // Prompt per titolo e descrizione
         const newTitle = prompt("Nuovo titolo:");
         const newDesc = prompt("Nuova descrizione:");
-        const newStatus = prompt(
-          "Nuovo status (in corso, approvata, scartata):"
-        );
 
+        // Prompt per status
+        let newStatus = prompt("Nuovo status (in corso, approvata, scartata):");
+
+        // Se l’utente non inserisce nulla, esce
         if (!newTitle && !newDesc && !newStatus) return;
 
+        // Validazione dello status
+        const validStatus = ["in corso", "approvata", "scartata"];
+        if (newStatus) {
+          newStatus = newStatus.toLowerCase().trim();
+          if (!validStatus.includes(newStatus)) {
+            showToast("⚠️ Status non valido! Modifica annullata.", "warning");
+            return; // Esce senza fare la richiesta PATCH
+          }
+        }
+
+        // Prepara il corpo della richiesta solo con i campi inseriti
         const body = {};
         if (newTitle) body.title = newTitle;
         if (newDesc) body.description = newDesc;
         if (newStatus) body.status = newStatus;
 
+        // Invia la richiesta PATCH solo se ci sono campi validi
         const res = await fetch(`${API_URL}/${id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -201,11 +215,11 @@
 
         if (res.ok) {
           showToast("Idea aggiornata con successo!", "info");
-          fetchIdeas();
+          fetchIdeas(); // Aggiorna la lista
         } else showToast("Errore durante l’aggiornamento", "error");
       }
 
-      // ----------------- ELIMINA IDEA -----------------
+      // ELIMINA IDEA
       async function deleteIdea(id) {
         if (confirm("Vuoi davvero eliminare questa idea?")) {
           const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
@@ -216,7 +230,7 @@
         }
       }
 
-      // ----------------- MI PIACE -----------------
+      // MI PIACE
       async function likeIdea(id) {
         const res = await fetch(`${API_URL}/${id}`);
         const idea = await res.json();
@@ -232,7 +246,7 @@
         } else showToast("Errore nel mettere Mi Piace", "error");
       }
 
-      // ----------------- AVVIO -----------------
+      //  AVVIO
       fetchIdeas(); // Carica tutte le idee all’avvio
     </script>
   </body>
