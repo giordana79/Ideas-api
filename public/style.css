@@ -1,169 +1,210 @@
-:root {
-  --bg: #f6f8fa;
-  --main-bg: #fff;
-  --header-bg: #2c3e50;
-  --text-color: #333;
-  --button-bg: #3498db;
-  --button-hover: #2980b9;
-  --idea-bg: #fafafa;
-}
-
-body.dark {
-  --bg: #121212;
-  --main-bg: #1e1e1e;
-  --header-bg: #1b1b1b;
-  --text-color: #f6f6f6;
-  --button-bg: #3498db;
-  --button-hover: #2980b9;
-  --idea-bg: #2c2c2c;
-}
-
-/* STILI GENERALI  */
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--bg);
-  color: var(--text-color);
+/* ------------------- RESET ------------------- */
+* {
   margin: 0;
   padding: 0;
-  transition:
-    background 0.3s,
-    color 0.3s;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
-header {
-  background-color: var(--header-bg);
-  color: #fff;
-  padding: 1.5rem;
-  text-align: center;
-  position: relative;
-  transition: background 0.3s;
-}
-#themeToggle {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #fff;
+
+/* ------------------- BODY ------------------- */
+body {
+  background-color: #f9f9f9;
   color: #333;
-  border: none;
-  padding: 0.5rem 0.8rem;
-  border-radius: 6px;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+  padding: 20px;
+}
+
+/* ------------------- TEMA DARK ------------------- */
+body.dark {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+/* ------------------- HEADER ------------------- */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  font-size: 2rem;
+}
+
+#themeToggle {
+  padding: 6px 12px;
   cursor: pointer;
-  font-weight: bold;
+  font-size: 1rem;
 }
-main {
-  max-width: 800px;
-  margin: 2rem auto;
-  background: var(--main-bg);
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  transition: background 0.3s;
-}
-h1 {
-  margin: 0;
-}
+
+/* ------------------- FORM ------------------- */
 form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s;
 }
-input,
-textarea,
-select,
-button {
-  padding: 0.7rem;
-  font-size: 1rem;
-  border-radius: 6px;
+
+body.dark form {
+  background: #2a2a2a;
+}
+
+form input,
+form textarea,
+form select {
+  padding: 8px;
+  border-radius: 5px;
   border: 1px solid #ccc;
-  transition:
-    background 0.3s,
-    color 0.3s;
+  font-size: 1rem;
 }
-button {
-  background-color: var(--button-bg);
-  color: white;
+
+body.dark form input,
+body.dark form textarea,
+body.dark form select {
+  border: 1px solid #555;
+  background-color: #333;
+  color: #f0f0f0;
+}
+
+form button {
+  padding: 10px;
+  background-color: #3498db;
   border: none;
+  color: white;
+  font-size: 1rem;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.3s;
 }
-button:hover {
-  background-color: var(--button-hover);
+
+form button:hover {
+  background-color: #2980b9;
 }
+
+/* ------------------- LISTA IDEE ------------------- */
+#ideasList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
 .idea {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background: var(--idea-bg);
-  transition:
-    transform 0.1s,
-    box-shadow 0.1s,
-    background 0.3s;
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s;
 }
-.idea:hover {
-  transform: scale(1.01);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+body.dark .idea {
+  background: #2a2a2a;
 }
+
+/* Titolo e status */
 .idea h3 {
-  margin: 0 0 0.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
+
+.status {
+  padding: 2px 8px;
+  border-radius: 5px;
+  color: white;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.status.in-corso {
+  background-color: #f39c12;
+} /* giallo */
+.status.approvata {
+  background-color: #27ae60;
+} /* verde */
+.status.scartata {
+  background-color: #c0392b;
+} /* rosso */
+
+/* Descrizione e info */
+.idea p {
+  margin-bottom: 8px;
+}
+
 .idea small {
   color: #666;
 }
-.idea-buttons {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.8rem;
-}
-.idea-buttons button {
-  background-color: #e0e0e0;
-  color: #333;
-  flex: 1;
-}
-.idea-buttons button:hover {
-  background-color: #d0d0d0;
-}
-.like {
-  background-color: #ffb84d;
-}
-.like:hover {
-  background-color: #ffa31a;
-}
-.status {
-  font-weight: bold;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  margin-left: 0.5rem;
-}
-.status.in-corso {
-  background: #f1c40f;
-  color: #fff;
-}
-.status.approvata {
-  background: #27ae60;
-  color: #fff;
-}
-.status.scartata {
-  background: #c0392b;
-  color: #fff;
+
+body.dark .idea small {
+  color: #aaa;
 }
 
-/*  TOAST */
+/* ------------------- PULSANTI ------------------- */
+.idea-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.idea-buttons button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 0.9rem;
+}
+
+.idea-buttons button.like {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.idea-buttons button.like:hover {
+  background-color: #c0392b;
+}
+
+.idea-buttons button:nth-child(2) {
+  /* Modifica */
+  background-color: #3498db;
+  color: white;
+}
+
+.idea-buttons button:nth-child(2):hover {
+  background-color: #2980b9;
+}
+
+.idea-buttons button:nth-child(3) {
+  /* Elimina */
+  background-color: #f39c12;
+  color: white;
+}
+
+.idea-buttons button:nth-child(3):hover {
+  background-color: #d35400;
+}
+
+/* ------------------- TOAST ------------------- */
 #toast {
   position: fixed;
   top: 20px;
   right: 20px;
-  color: white;
-  padding: 1rem 1.5rem;
+  padding: 10px 20px;
   border-radius: 8px;
+  color: white;
+  font-weight: bold;
   opacity: 0;
+  pointer-events: none;
   transform: translateY(-20px);
   transition:
-    opacity 0.4s,
-    transform 0.4s;
-  pointer-events: none;
+    opacity 0.3s,
+    transform 0.3s;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  font-weight: 500;
 }
