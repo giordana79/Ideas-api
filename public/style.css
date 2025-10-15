@@ -1,4 +1,4 @@
-/* ------------------- RESET BASE ------------------- */
+/* ================== RESET BASE ================== */
 * {
   margin: 0;
   padding: 0;
@@ -6,157 +6,159 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* ------------------- BODY ------------------- */
 body {
-  background-color: #f4f6f8;
+  background-color: #f5f5f5; /* Tema chiaro default */
   color: #333;
+  line-height: 1.6;
+  min-height: 100vh;
   transition:
     background-color 0.3s,
     color 0.3s;
-  padding: 20px;
+  padding: 0 20px;
 }
 
-/* ------------------- DARK THEME ------------------- */
+/* ================== TEMA SCURO ================== */
 body.dark {
-  background-color: #121212;
-  color: #e0e0e0;
+  background-color: #1e1e1e;
+  color: #f5f5f5;
 }
 
-/* ------------------- HEADER ------------------- */
+/* ================== HEADER ================== */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin: 20px 0;
 }
 
 header h1 {
   font-size: 2rem;
-  color: #3498db;
 }
 
 #themeToggle {
-  padding: 8px 14px;
-  cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  background-color: #3498db;
-  color: white;
-  transition: background 0.3s;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
 #themeToggle:hover {
-  background-color: #217dbb;
+  transform: scale(1.2);
 }
 
-/* ------------------- FORM ------------------- */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 30px;
+/* ================== FORM ================== */
+form#ideaForm {
   background: #fff;
   padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: background 0.3s;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
 }
 
-body.dark form {
-  background: #1f1f1f;
+body.dark form#ideaForm {
+  background: #2c2c2c;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 form input,
 form textarea,
 form select {
+  width: 100%;
   padding: 10px;
+  margin: 8px 0;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 1rem;
-  transition: border-color 0.2s;
+  transition:
+    border-color 0.2s,
+    background-color 0.3s;
 }
 
 body.dark form input,
 body.dark form textarea,
 body.dark form select {
+  background-color: #3a3a3a;
   border: 1px solid #555;
-  background-color: #2c2c2c;
-  color: #e0e0e0;
-}
-
-form input:focus,
-form textarea:focus,
-form select:focus {
-  outline: none;
-  border-color: #3498db;
+  color: #f5f5f5;
 }
 
 form button {
-  padding: 12px;
+  padding: 10px 15px;
+  margin-top: 10px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background-color: #3498db;
-  color: white;
-  font-size: 1rem;
-  font-weight: bold;
+  color: #fff;
   cursor: pointer;
+  font-size: 1rem;
   transition:
-    transform 0.2s,
-    background 0.3s;
-}
-
-form button:hover {
-  background-color: #217dbb;
-  transform: translateY(-2px);
-}
-
-/* ------------------- LISTA IDEE ------------------- */
-#ideasList {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.idea {
-  background: #fff;
-  padding: 18px;
-  border-radius: 15px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  transition:
-    background 0.3s,
+    background-color 0.3s,
     transform 0.2s;
 }
 
+form button:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
+/* ================== IDEE LIST ================== */
+#ideasList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* CARD IDEA */
+.idea {
+  background: #fff;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
+}
+
 body.dark .idea {
-  background: #1f1f1f;
+  background: #2c2c2c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-.idea:hover {
-  transform: translateY(-3px);
-}
-
-/* ------------------- TITOLO E STATUS ------------------- */
 .idea h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
-  font-size: 1.2rem;
 }
 
+.idea p {
+  margin-bottom: 8px;
+}
+
+.idea small {
+  color: #777;
+}
+
+body.dark .idea small {
+  color: #bbb;
+}
+
+/* STATUS */
 .status {
-  padding: 4px 12px;
-  border-radius: 20px;
-  color: white;
-  font-size: 0.85rem;
-  text-transform: capitalize;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
   font-weight: bold;
+  text-transform: capitalize;
+  color: #fff;
 }
 
 .status.in-corso {
-  background-color: #f39c12;
-} /* giallo */
+  background-color: #3498db;
+} /* blu */
 .status.approvata {
   background-color: #27ae60;
 } /* verde */
@@ -164,88 +166,55 @@ body.dark .idea {
   background-color: #c0392b;
 } /* rosso */
 
-/* ------------------- DESCRIZIONE E INFO ------------------- */
-.idea p {
-  margin-bottom: 10px;
-  line-height: 1.4;
-}
-
-.idea small {
-  color: #666;
-}
-
-body.dark .idea small {
-  color: #aaa;
-}
-
-/* ------------------- PULSANTI ------------------- */
+/* BOTTONI CARD */
 .idea-buttons {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .idea-buttons button {
-  padding: 6px 12px;
   border: none;
-  border-radius: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: bold;
   transition:
     transform 0.2s,
     opacity 0.2s;
 }
 
 .idea-buttons button:hover {
-  transform: translateY(-2px);
+  transform: scale(1.05);
+  opacity: 0.9;
 }
 
-/* Like */
-.idea-buttons .like {
+/* COLORI BOTTONI */
+.idea-buttons button.like {
   background-color: #e74c3c;
-  color: white;
+  color: #fff;
 }
-
-.idea-buttons .like:hover {
-  background-color: #c0392b;
-}
-
-/* Modifica */
 .idea-buttons button:nth-child(2) {
   background-color: #3498db;
-  color: white;
-}
-
-.idea-buttons button:nth-child(2):hover {
-  background-color: #217dbb;
-}
-
-/* Elimina */
+  color: #fff;
+} /* Modifica */
 .idea-buttons button:nth-child(3) {
-  background-color: #f39c12;
-  color: white;
-}
+  background-color: #f1c40f;
+  color: #fff;
+} /* Elimina */
 
-.idea-buttons button:nth-child(3):hover {
-  background-color: #d35400;
-}
-
-/* ------------------- TOAST ------------------- */
+/* ================== TOAST ================== */
 #toast {
   position: fixed;
-  top: 25px;
-  right: 25px;
-  padding: 14px 20px;
-  border-radius: 12px;
-  color: white;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: #fff;
   font-weight: bold;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-20px);
-  transition:
-    opacity 0.3s,
-    transform 0.3s;
+  transition: all 0.3s;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
