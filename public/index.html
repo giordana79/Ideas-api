@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="it">
+  <!-- Dichiarazione del tipo di documento e lingua -->
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Imposta la codifica dei caratteri -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Responsive su mobile -->
+    <link rel="icon" href="idea.png" />
+    <!-- Icona della pagina -->
+    <title>Bacheca Idee</title>
+    <!-- Titolo della scheda -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- Collega il CSS esterno -->
+  </head>
+  <body>
+    <header>
+      <h1>💡 Bacheca Idee</h1>
+      <!-- Titolo della pagina visibile -->
+      <button id="themeToggle">🌙</button>
+      <!-- Pulsante toggle Tema Chiaro/Scuro -->
+    </header>
+
+    <main>
+      <!-- Form per creare una nuova idea -->
+      <form id="ideaForm">
+        <input type="text" id="author" placeholder="Autore" required />
+        <!-- Nome autore -->
+        <input type="text" id="title" placeholder="Titolo dell’idea" required />
+        <!-- Titolo idea -->
+        <textarea
+          id="description"
+          placeholder="Descrizione"
+          required
+        ></textarea>
+        <!-- Descrizione dell’idea -->
+        <select id="category">
+          <option value="">Seleziona una categoria</option>
+          <option value="tecnologia">Tecnologia</option>
+          <option value="educazione">Educazione</option>
+          <option value="ambiente">Ambiente</option>
+          <option value="altro">Altro</option>
+        </select>
+        <!-- Categoria dell’idea -->
+        <button type="submit">💾 Pubblica idea</button>
+        <!-- Pulsante invio -->
+      </form>
+
+      <div id="ideasList"></div>
+      <!-- Contenitore dove verranno mostrate tutte le idee -->
+    </main>
+
+    <div id="toast"></div>
+    <!-- Contenitore per messaggi temporanei (toast) -->
+
+    <script>
+      const API_URL = "http://localhost:3000/api/ideas"; // URL base dell’API REST
+
+      // TEMA
+      const themeBtn = document.getElementById("themeToggle"); // Pulsante toggle
+      const savedTheme = localStorage.getItem("theme"); // Recupera tema salvato nel browser
+      if (savedTheme === "dark") document.body.classList.add("dark"); // Applica tema scuro se salvato
+      themeBtn.textContent = document.body.classList.contains("dark")
+        ? "☀️"
+        : "🌙"; // Aggiorna icona del pulsante in base al tema
+
+      themeBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark"); // Attiva/disattiva classe dark
+        const isDark = document.body.classList.contains("dark"); // Controlla lo stato
+        themeBtn.textContent = isDark ? "☀️" : "🌙"; // Aggiorna icona
+        localStorage.setItem("theme", isDark ? "dark" : "light"); // Salva stato in localStorage
+      });
+
+      // TOAST
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast"); // Seleziona contenitore
+        // Configurazioni colori e icone per tipi di messaggio
+        const config = {
+          success: { color: "#27ae60", icon: "✅" },
+          error: { color: "#c0392b", icon: "❌" },
+          warning: { color: "#f39c12", icon: "⚠️" },
+          info: { color: "#3498db", icon: "💡" },
+        };
+        const { color, icon } = config[type] || config.info; // Usa configurazione corretta
+        toast.textContent = `${icon} ${message}`; // Inserisce testo e icona
+        toast.style.backgroundColor = color; // Colore dello sfondo
+        toast.style.opacity = "1"; // Mostra toast
+        toast.style.transform = "translateY(0)"; // Posizione iniziale
+        toast.style.pointerEvents = "auto"; // Rende cliccabile
+        setTimeout(() => {
+          toast.style.opacity = "0"; // Nasconde toast dopo 2,5s
+          toast.style.transform = "translateY(-20px)"; // Effetto scorrimento verso l’alto
+          toast.style.pointerEvents = "none"; // Disattiva interazione
+        }, 2500);
+      }
+
+      // Funzione per evitare l’inserimento di caratteri HTML potenzialmente pericolosi
+      function escapeHtml(s) {
+        if (!s) return "";
+        return s
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      //  CRUD
+      async function fetchIdeas() {
+        try {
+          const res = await fetch(API_URL); // Richiesta GET per tutte le idee
+          const ideas = await res.json(); // Converte risposta JSON
+          const list = document.getElementById("ideasList"); // Contenitore idee
+          list.innerHTML = ""; // Pulisce contenitore
+          ideas.forEach((idea) => {
+            // Cicla tutte le idee
+            const div = document.createElement("div");
+            div.className = "idea"; // Classe CSS idea
+            div.innerHTML = `
+            <h3>${escapeHtml(idea.title)}
+              <span class="status ${
+                idea.status === "approvata"
+                  ? "approvata"
+                  : idea.status === "scartata"
+                    ? "scartata"
+                    : "in-corso"
+              }">${idea.status}</span>
+            </h3>
+            <p>${escapeHtml(idea.description)}</p>
+            <small><b>${escapeHtml(idea.author)}</b> — ${escapeHtml(idea.category)} — ${new Date(idea.createdAt).toLocaleDateString()}</small>
+            <div class="idea-buttons">
+              <button class="like" onclick="likeIdea('${idea._id}')">❤️ ${idea.likes ?? 0}</button>
+              <button onclick="editIdea('${idea._id}')">✏️ Modifica</button>
+              <button onclick="deleteIdea('${idea._id}')">🗑️ Elimina</button>
+            </div>
+          `;
+            list.appendChild(div); // Aggiunge l’idea alla lista
+          });
+        } catch (err) {
+          showToast("❌ Errore nel caricare le idee", "error"); // Messaggio errore
+        }
+      }
+
+      // Gestione invio form per creare nuova idea
+      document
+        .getElementById("ideaForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault(); // Previene refresh pagina
+          const newIdea = {
+            author: document.getElementById("author").value,
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value,
+            category: document.getElementById("category").value,
+          };
+          const res = await fetch(API_URL, {
+            method: "POST", // Metodo POST per creare nuova idea
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newIdea), // Dati inviati come JSON
+          });
+          if (res.ok) {
+            showToast("Idea pubblicata con successo!", "success"); // Toast positivo
+            e.target.reset(); // Reset form
+            fetchIdeas(); // Ricarica lista idee
+          } else showToast("Errore nella pubblicazione", "error"); // Toast errore
+        });
+
+      // Modifica un’idea esistente
+      async function editIdea(id) {
+        const newTitle = prompt("Nuovo titolo:"); // Richiesta nuovo titolo
+        const newDesc = prompt("Nuova descrizione:"); // Richiesta nuova descrizione
+        if (!newTitle && !newDesc) return; // Se vuoti, esci
+        const res = await fetch(`${API_URL}/${id}`, {
+          method: "PATCH", // Metodo PATCH per aggiornamento parziale
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: newTitle, description: newDesc }),
+        });
+        if (res.ok) {
+          showToast("Idea aggiornata con successo!", "info"); // Toast info
+          fetchIdeas(); // Ricarica lista
+        } else showToast("Errore durante l’aggiornamento", "error"); // Toast errore
+      }
+
+      // Elimina un’idea
+      async function deleteIdea(id) {
+        if (confirm("Vuoi davvero eliminare questa idea?")) {
+          // Conferma
+          const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+          if (res.ok) {
+            showToast("Idea eliminata con successo", "warning"); // Toast warning
+            fetchIdeas(); // Ricarica lista
+          } else showToast("Errore durante la cancellazione", "error"); // Toast errore
+        }
+      }
+
+      // Incrementa "like" di un’idea
+      async function likeIdea(id) {
+        const res = await fetch(`${API_URL}/${id}`); // Prende idea corrente
+        const idea = await res.json();
+        const newLikes = (idea.likes || 0) + 1; // Incrementa likes
+        const updateRes = await fetch(`${API_URL}/${id}`, {
+          method: "PATCH", // Aggiorna likes
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ likes: newLikes }),
+        });
+        if (updateRes.ok) {
+          showToast('Hai messo "Mi piace"!', "success"); // Toast positivo
+          fetchIdeas(); // Ricarica lista
+        } else showToast("Errore nel mettere Mi Piace", "error"); // Toast errore
+      }
+
+      fetchIdeas(); // Carica tutte le idee all’avvio
+    </script>
+  </body>
+</html>
